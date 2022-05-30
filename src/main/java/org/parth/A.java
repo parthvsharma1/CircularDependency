@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class A {
-
+    private Integer number;
+    @Autowired
     B b;
 
-    @Autowired
     public A(@Lazy B b) {
         super();
         this.b = b;

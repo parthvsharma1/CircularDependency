@@ -5,8 +5,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class B {
-    A a;
     @Autowired
+    A a;
+
     public B(A a) {
         super();
         this.a = a;
