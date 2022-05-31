@@ -248,7 +248,7 @@ public class findCyclicDependency {
         for(String className:beans){
 //            System.out.println("\n"+className);
 
-            Class<?> thisClass = Class.forName(className);    // should not have prefix "class"
+            Class<?> thisClass = Class.forName(className);    // should not have a prefix "class"
 
 
             try {
@@ -276,7 +276,7 @@ public class findCyclicDependency {
                             edges.put(updateClassName,currnbr);
                         }
 
-                        String currField=fields[i].toString();
+//                        String currField=fields[i].toString();
 //                        System.out.println("field "+i+" is of type "+currField);
 //                        System.out.println("this is annotated with "+fields[i].getDeclaredAnnotation(Autowired.class));
 
