@@ -9,6 +9,15 @@ public class A {
     private Integer number;
     @Autowired
     B b;
+    public A(){}
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
 
     public A(@Lazy B b) {
         super();
