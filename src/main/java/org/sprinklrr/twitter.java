@@ -8,10 +8,13 @@ public class twitter {
     private String name;
     private Integer number;
 
-    @Autowired
     private facebook fb;
 
-    twitter(){}
+    @Autowired
+    public twitter(facebook fb)
+    {
+        this.fb=fb;
+    }
     public String getName() {
         return name;
     }

@@ -28,6 +28,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import static java.util.stream.Collectors.toList;
+
 public class findCyclicDependency {
     public static Map<String,ArrayList<String>> edges;
 
@@ -86,13 +88,16 @@ public class findCyclicDependency {
             NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(
                     doc, XPathConstants.NODESET);
 
+            String byType="class";
+            String byName="id";
+
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node nNode = nodeList.item(i);
 //                System.out.println("\nCurrent Element :" + nNode.getNodeName());
 
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
-                    String str = eElement.getAttribute("class");
+                    String str = eElement.getAttribute(byType);
 //                    System.out.println("Class is : "+ str);
                     beans.add(str);
 
@@ -140,10 +145,11 @@ public class findCyclicDependency {
                 if (nNode.getNodeType() == Node.ELEMENT_NODE)
                 {
                     Element eElement = (Element) nNode;
-                    String packages = eElement.getAttribute("base-package");
-//                    System.out.println("package is : "+ packages);
+                    String packagesList = eElement.getAttribute("base-package");
+//                    System.out.println("package is : "+ packagesList);
 
-                    List<String> myList = new ArrayList<String>(Arrays.asList(packages.split(",")));
+                    // add all the packages into an array list
+                    List<String> myList = new ArrayList<String>(Arrays.asList(packagesList.split(",")));
                     for(String tmp:myList)
                     {
 //                        System.out.println(tmp);
@@ -154,7 +160,7 @@ public class findCyclicDependency {
 
             }
 
-            // add all classes of each package into the beans list
+            // add classes of each package into the beans list
         for(String currPackageName:allPackages)
         {
             List<Class<?>> classes = ClassFinder.find(currPackageName);
@@ -242,6 +248,21 @@ public class findCyclicDependency {
 
     }
 
+    private static void addEdge(String className,String newnbr)
+    {
+        String updateClassName="class "+className;
+        ArrayList<String> currnbrs=edges.get(updateClassName);
+
+        if(currnbrs!=null) {
+            currnbrs.add(newnbr);
+            edges.put(updateClassName, currnbrs);
+        }
+        else {
+            ArrayList<String> currnbr = new ArrayList<>();
+            currnbr.add(newnbr);
+            edges.put(updateClassName,currnbr);
+        }
+    }
 
     private static void makeDirectedGraph(ArrayList<String> beans) throws ClassNotFoundException {
 
@@ -260,26 +281,10 @@ public class findCyclicDependency {
 
                 // find auto wires in fields (works with reqd=false as well)
                 for(int i=0;i<fields.length;i++){
-                    if(fields[i].isAnnotationPresent(Autowired.class)!=false){
-
-                        String updateClassName="class "+className;
+                    if(fields[i].isAnnotationPresent(Autowired.class)!=false)
+                    {
                         String newnbr=fields[i].getType().toString();
-                        ArrayList<String> currnbrs=edges.get(updateClassName);
-
-                        if(currnbrs!=null) {
-                            currnbrs.add(newnbr);
-                            edges.put(updateClassName, currnbrs);
-                        }
-                        else {
-                            ArrayList<String> currnbr = new ArrayList<>();
-                            currnbr.add(newnbr);
-                            edges.put(updateClassName,currnbr);
-                        }
-
-//                        String currField=fields[i].toString();
-//                        System.out.println("field "+i+" is of type "+currField);
-//                        System.out.println("this is annotated with "+fields[i].getDeclaredAnnotation(Autowired.class));
-
+                        addEdge(className,newnbr);
                     }
 
                 }
@@ -291,15 +296,25 @@ public class findCyclicDependency {
 
                 }
 
-
+*/
 
 //              finding autowires in constructors
                 for(int i=0;i< constructors.length;i++)
                 {
-                    System.out.println(constructors[i].toString());
+                    if(constructors[i].isAnnotationPresent(Autowired.class)!=false)
+                    {
+                        List<Class> arguments= Arrays.stream(constructors[i].getParameterTypes()).toList();
+                        for(int j=0;j<arguments.size();j++)
+                        {
+                            String newnbr=arguments.get(j).toString();
+                            addEdge(className,newnbr);
+
+                        }
+
+                    }
                 }
 
-*/
+
 
             } catch (Throwable e) {
                 System.err.println(e);
@@ -316,6 +331,7 @@ public class findCyclicDependency {
         System.out.println(Arrays.deepToString(edges.entrySet().toArray()));
     }
 }
+
 // qualifier
 // beans/bean
 
