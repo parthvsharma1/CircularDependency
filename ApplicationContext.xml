@@ -14,8 +14,8 @@
         <property name ="number" value="77"/>
     </bean>
 
-    <bean id="b" class="org.parth.B">
-    </bean>
+<!--    <bean id="b" class="org.parth.B">-->
+<!--    </bean>-->
 
     <bean id="c1" class="org.parth.C">
         <property name="name" value="temp1"/>

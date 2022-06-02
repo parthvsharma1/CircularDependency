@@ -203,7 +203,8 @@ public class findCyclicDependency {
             if( thisClass.isAnnotationPresent(Component.class)!=false) {
                 beans.add(thisClass.toString());
             }
-            else if (thisClass.isAnnotationPresent(Service.class)!=false || thisClass.isAnnotationPresent(Repository.class)!=false || thisClass.isAnnotationPresent(Controller.class)!=false) {
+            /// automatically find sub compnents
+            else if (thisClass.isAnnotationPresent(Service.class)!=false || thisClass.isAnnotationPresent(Repository.class)!=false || thisClass.isAnnotationPresent(Controller.class)!=false || thisClass.isAnnotationPresent(Configuration.class)!=false) {
                 beans.add(thisClass.toString());
             }
 
@@ -212,10 +213,9 @@ public class findCyclicDependency {
         return;
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, XPathExpressionException, IOException, ParserConfigurationException, SAXException {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, XPathExpressionException, IOException, ParserConfigurationException, SAXException, InterruptedException {
 
         ArrayList<String> allClasses = new ArrayList<>();
-
         // get classes from bean-id pairs and the packages to be scanned
         getAllClassesfromXml("ApplicationContext.xml",allClasses);
 
@@ -237,6 +237,7 @@ public class findCyclicDependency {
 //        System.out.println("\n usefull classes are : ");
 //        for(String s:beans) {System.out.println(s);}
 
+
         edges= new HashMap<>();
 
         makeDirectedGraph(beans);
@@ -246,6 +247,7 @@ public class findCyclicDependency {
         System.out.println("the graph has a cycle : "+ cycle);
 
 
+    return;
     }
 
     private static void addEdge(String className,String newnbr)
@@ -288,15 +290,7 @@ public class findCyclicDependency {
                     }
 
                 }
-  /*
-                // find auto wires in methods( mainly setters() )
-                for (int i = 0; i < methods.length; i++) {
-                    System.out.println("method "+i+" is "+ methods[i].toString());
-//                System.out.println("annotated with "+methods[i].getDeclaredAnnotations());
 
-                }
-
-*/
 
 //              finding autowires in constructors
                 for(int i=0;i< constructors.length;i++)

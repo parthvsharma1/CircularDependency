@@ -13,6 +13,7 @@ public class twitter {
     @Autowired
     public twitter(facebook fb)
     {
+        System.out.println("making object :C ");
         this.fb=fb;
     }
     public String getName() {
