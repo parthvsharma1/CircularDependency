@@ -1,7 +1,9 @@
 package org.parth;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -215,39 +217,65 @@ public class findCyclicDependency {
 
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, XPathExpressionException, IOException, ParserConfigurationException, SAXException, InterruptedException {
 
-        ArrayList<String> allClasses = new ArrayList<>();
-        // get classes from bean-id pairs and the packages to be scanned
-        getAllClassesfromXml("ApplicationContext.xml",allClasses);
+        ArrayList<Commit> commitHistory=RunShellCommandFromJava.runCmd("git log");
+
+        for(Commit commit:commitHistory) {
+
+            commit.print();
+            String command="git checkout "+commit.getId();
+            Process proc = Runtime.getRuntime().exec(command);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+            String line="";
+//            while((line = reader.readLine()) != null){
+//                System.out.println(line);
+//            }
+            proc.waitFor();
+
+
+            ArrayList<String> allClasses = new ArrayList<>();
+            // get classes from bean-id pairs and the packages to be scanned
+            getAllClassesfromXml("ApplicationContext.xml", allClasses);
 
 
 //        for(String s:allClasses) { System.out.println(s); }
 
-        ArrayList<String> beans = new ArrayList<>();
-        getusefulClasses(allClasses,beans);// with @component annotation
+            ArrayList<String> beans = new ArrayList<>();
+            getusefulClasses(allClasses, beans);// with @component annotation
 
 
-        //remove prefix "class" from all usefull classes
-        for (int i=0;i< beans.size();i++)
-        {
-            String ss=beans.get(i);
-            ss=removeClassPrefix(ss);
-            beans.set(i,ss);
-        }
+            //remove prefix "class" from all usefull classes
+            for (int i = 0; i < beans.size(); i++) {
+                String ss = beans.get(i);
+                ss = removeClassPrefix(ss);
+                beans.set(i, ss);
+            }
 
 //        System.out.println("\n usefull classes are : ");
 //        for(String s:beans) {System.out.println(s);}
 
 
-        edges= new HashMap<>();
+            edges = new HashMap<>();
 
-        makeDirectedGraph(beans);
+            makeDirectedGraph(beans);
 
-        printGraph();
-        boolean cycle=findCycle();
-        System.out.println("the graph has a cycle : "+ cycle);
+//            printGraph();
+            boolean cycle = findCycle();
+            System.out.println("the graph has a cycle : " + cycle);
+            if(cycle!=true)
+            {
+                Process proc2 = Runtime.getRuntime().exec("git checkout master");
+                proc2.waitFor();
+                return;
+            }
+        }
+
+        Process proc2 = Runtime.getRuntime().exec("git checkout master");
+        proc2.waitFor();
 
 
-    return;
+        return;
     }
 
     private static void addEdge(String className,String newnbr)
