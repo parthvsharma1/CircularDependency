@@ -17,7 +17,7 @@ public class RunShellCommandFromJava {
         String date="";
         while((line = reader.readLine()) != null)
         {
-            String t=getTypeof(line);
+            String t=getTypeofGitMessage(line);
             if(t.equals("commit"))
             {
                 id=extractid(line);
@@ -42,7 +42,7 @@ public class RunShellCommandFromJava {
 
         return allCommits;
     }
-    private static String getTypeof(String s)
+    private static String getTypeofGitMessage(String s)
     {
         int n=s.length();
         String type="";
@@ -57,11 +57,11 @@ public class RunShellCommandFromJava {
 
         return type;
     }
-    public static ArrayList<Commit> runCmd(String command) throws IOException, InterruptedException
+    public static ArrayList<Commit> getGitCommits() throws IOException, InterruptedException
     {
 
 //        String command = "git log";
-
+        String command="git log";
         Process proc = Runtime.getRuntime().exec(command);
 
         // Read the output
@@ -75,5 +75,11 @@ public class RunShellCommandFromJava {
         proc.waitFor();
 
         return allCommits;
+    }
+    public static void runCmd(String command) throws IOException, InterruptedException {
+        Process proc = Runtime.getRuntime().exec(command);
+        proc.waitFor();
+        return;
+
     }
 }
