@@ -34,41 +34,60 @@ import static java.util.stream.Collectors.toList;
 
 public class findCyclicDependency {
     public static Map<String,ArrayList<String>> edges;
+    private static String loop="";
+    private static String baseElement="";
 
-    public static  boolean isCyclicUtil(String i,Set<String> visited,Set<String> recStack)
-    {
-        if(recStack.contains(i)==true)
+    public static boolean isCyclicUtil(String i, Set<String> visited, Set<String> recStack) {
+        if (recStack.contains(i) == true) {
+            loop+="<- ";
+            baseElement = i;
             return true;
-        if(visited.contains(i)==true)
+        }
+        if (visited.contains(i) == true)
             return false;
 
         recStack.add(i);
         visited.add(i);
-        ArrayList<String> children =edges.get(i);
-        if(children==null)
-            return false;
-        for(String child:children)
+        ArrayList<String> children = edges.get(i);
+        if (children == null)
         {
-            if(isCyclicUtil(child,visited,recStack)==true)
+            recStack.remove(i);
+            return false;
+        }
+        for (String child : children) {
+            if (isCyclicUtil(child, visited, recStack) == true) {
+                if (baseElement.equals("") == false)
+                {
+                    loop += child;
+                    loop += " <- ";
+                }
+                else if (child.equals(baseElement) == true)
+                {
+                    baseElement = "";
+                }
                 return true;
+            }
         }
 
         recStack.remove(i);
         return false;
     }
-    public static boolean findCycle()
-    {
+
+    public static boolean findCycle() {
 
         Set<String> visited = new HashSet<String>();
         Set<String> recStack = new HashSet<String>();
-
-        for(String s:edges.keySet())
-        {
-            if (isCyclicUtil(s, visited, recStack))
+        for (String s : edges.keySet()) {
+            if (isCyclicUtil(s, visited, recStack)==true)
+            {
+                System.out.println("cycle is "+loop);
                 return true;
+            }
+
         }
-        return  false;
+        return false;
     }
+
 
     public static void getClassfromBean(String xmlFile, ArrayList<String> beans)
     {
