@@ -201,7 +201,7 @@ public class findCyclicDependency {
                 {
                     if(constructors[i].isAnnotationPresent(Autowired.class)!=false)
                     {
-                        List<Class> arguments= Arrays.stream(constructors[i].getParameterTypes()).toList();
+                        List<Class> arguments= Arrays.stream(constructors[i].getParameterTypes()).collect(toList());
                         for(int j=0;j<arguments.size();j++)
                         {
                             String newnbr=arguments.get(j).toString();
@@ -255,7 +255,7 @@ public class findCyclicDependency {
                 {
                     if(constructors[i].isAnnotationPresent(Autowired.class)!=false)
                     {
-                        List<Class> arguments= Arrays.stream(constructors[i].getParameterTypes()).toList();
+                        List<Class> arguments= Arrays.stream(constructors[i].getParameterTypes()).collect(toList());
                         for(int j=0;j<arguments.size();j++)
                         {
                             String newnbr=arguments.get(j).toString();
@@ -395,7 +395,7 @@ public class findCyclicDependency {
                 {
                     if(constructors[i].isAnnotationPresent(Autowired.class)!=false)
                     {
-                        List<Class> arguments= Arrays.stream(constructors[i].getParameterTypes()).toList();
+                        List<Class> arguments= Arrays.stream(constructors[i].getParameterTypes()).collect(toList());
                         for(int j=0;j<arguments.size();j++)
                         {
                             String newnbr=arguments.get(j).toString();
